@@ -1,0 +1,96 @@
+@page "/add-failure"
+@inject ApiService Api
+@inject NavigationManager Nav
+
+<h3>Add Failure</h3>
+
+@if (machines == null)
+{
+    <p>Loading machines...</p>
+}
+else if (!machines.Any())
+{
+    <p class="text-danger">No machines available. Add machines first.</p>
+}
+
+<div>
+    <label>Failure Name</label>
+    <input placeholder="Failure name" @bind="failure.Name" />
+</div>
+<div>
+    <label>Machine</label>
+    <select @bind="failure.MachineId">
+        <option value="0">-- Select machine --</option>
+        @foreach (var m in machines)
+        {
+            <option value="@m.Id">@m.Id - @m.Name</option>
+        }
+    </select>
+</div>
+<div>
+    <label>Description</label>
+    <textarea placeholder="Description" @bind="failure.Description"></textarea>
+</div>
+<div>
+    <label>Start</label>
+    <input type="datetime-local" @bind="failure.StartOfFailure" />
+</div>
+<div>
+    <label>End</label>
+    <input type="datetime-local" @bind="failure.EndOfFailure" />
+</div>
+
+<button @onclick="Save" disabled="@(machines == null || !machines.Any())">Save</button>
+
+@if (!string.IsNullOrEmpty(error))
+{
+    <p class="text-danger">@error</p>
+}
+
+@code {
+    private Failure failure = new Failure { StartOfFailure = DateTime.Now };
+    private List<Machine> machines = new();
+    private string? error;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            machines = await Api.GetMachines();
+        }
+        catch (Exception ex)
+        {
+            error = "Unable to load machines: " + ex.Message;
+        }
+    }
+
+    async Task Save()
+    {
+        error = null;
+        if (string.IsNullOrWhiteSpace(failure.Name))
+        {
+            error = "Failure name is required.";
+            return;
+        }
+        if (failure.MachineId <= 0)
+        {
+            error = "Please select a machine.";
+            return;
+        }
+        if (string.IsNullOrWhiteSpace(failure.Description))
+        {
+            error = "Description is required.";
+            return;
+        }
+
+        try
+        {
+            await Api.AddFailure(failure);
+            Nav.NavigateTo("/failures");
+        }
+        catch (Exception ex)
+        {
+            error = "Could not save failure: " + ex.Message;
+        }
+    }
+}

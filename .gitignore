@@ -1,0 +1,85 @@
+# ========================
+# Build / bin / obj
+# ========================
+bin/
+obj/
+out/
+publish/
+
+# ========================
+# User-specific files
+# ========================
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# ========================
+# IDEs
+# ========================
+# VS Code
+.vscode/
+
+# JetBrains Rider
+.idea/
+
+# ========================
+# Logs
+# ========================
+*.log
+*.vspscc
+
+# ========================
+# NuGet packages
+# ========================
+*.nupkg
+*.snupkg
+packages/
+
+# ========================
+# Database / EF / migrations
+# ========================
+*.db
+*.mdf
+*.ldf
+*.sqlite
+*.bak
+*.jfm
+# Migrations folder is typically part of source control, so include it
+# If you have local EF snapshots you don't want, ignore:
+**/Migrations/**/*.Designer.cs
+
+# ========================
+# Secrets / local settings
+# ========================
+appsettings.*.json
+secrets.json
+.env
+
+# ========================
+# OS / System files
+# ========================
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# ========================
+# Node / NPM / frontend tooling (if ever used)
+# ========================
+node_modules/
+wwwroot/lib/
+
+# ========================
+# Test result / coverage
+# ========================
+TestResults/
+*.trx
+*.coverage
+*.coveragexml
+
+# ========================
+# Temporary files
+# ========================
+*.tmp
+*.temp

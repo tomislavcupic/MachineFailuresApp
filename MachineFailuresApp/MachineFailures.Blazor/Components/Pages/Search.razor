@@ -1,0 +1,111 @@
+@page "/search"
+
+@inject ApiService Api
+
+<h3>Search</h3>
+
+<div>
+    <label>Machine name</label>
+    <input @bind="machineName" />
+</div>
+
+<div>
+    <label>Category</label>
+    <select @bind="selectedCategory">
+        <option value="0">All</option>
+        @foreach (var c in categories)
+        {
+            <option value="@c.Id">@c.Name</option>
+        }
+    </select>
+</div>
+
+<div>
+    <label>Failure from</label>
+    <input type="datetime-local" @bind="dateFrom" />
+</div>
+
+<div>
+    <label>Failure to</label>
+    <input type="datetime-local" @bind="dateTo" />
+</div>
+
+<button @onclick="SearchForMachines">Search</button>
+
+<hr/>
+
+@if (!string.IsNullOrWhiteSpace(error))
+{
+    <div style="color:red">@error</div>
+}
+
+@if(results == null)
+{
+    <p>No results</p>
+}
+else
+{
+    <table>
+        <thead>
+            <tr>
+                <th>Machine</th>
+                <th>Category</th>
+                <th>Failure</th>
+                <th>Start</th>
+                <th>End</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(var r in results)
+            {
+                <tr>
+                    <td>@r.MachineName</td>
+                    <td>@r.CategoryName</td>
+                    <td>@r.FailureName</td>
+                    <td>@r.StartOfFailure</td>
+                    <td>@r.EndOfFailure</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+
+    string? machineName;
+    DateTime? dateFrom;
+    DateTime? dateTo;
+    int selectedCategory;
+    string? error;
+
+    public class SearchResult
+    {
+        public string? MachineName { get; set; }
+        public string? CategoryName { get; set; }
+        public string? FailureName { get; set; }
+        public DateTime StartOfFailure { get; set; }
+        public DateTime? EndOfFailure { get; set; }
+    }
+
+    List<SearchResult>? results;
+    public List<Category> categories = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        categories = await Api.GetCategories();
+    }
+
+    private async Task SearchForMachines()
+    {
+        try
+        {
+            error = null;
+            results = await Api.SearchMachines(machineName, dateFrom, dateTo, selectedCategory);
+        }
+        catch (HttpRequestException ex)
+        {
+            error = $"Search failed: {ex.Message}";
+            results = null;
+        }
+    }
+}

@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="MachineFailuresApp/MachineFailures.API/MachineFailures.API.csproj" />
+  <Project Path="MachineFailuresApp/MachineFailures.Application/MachineFailures.Application.csproj" />
+  <Project Path="MachineFailuresApp/MachineFailures.Blazor/MachineFailures.Blazor.csproj" />
+  <Project Path="MachineFailuresApp/MachineFailures.Domain/MachineFailures.Domain.csproj" />
+  <Project Path="MachineFailuresApp/MachineFailures.Infrastructure/MachineFailures.Infrastructure.csproj" />
+</Solution>

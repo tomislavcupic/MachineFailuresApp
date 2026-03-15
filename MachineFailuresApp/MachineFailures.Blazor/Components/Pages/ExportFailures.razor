@@ -1,0 +1,50 @@
+@page "/export"
+
+@inject ApiService Api
+@inject HttpClient Http
+@inject IJSRuntime JS
+@inject NavigationManager Nav
+
+<h3>Export to Excel</h3>
+
+<button @onclick="OpenModal">Export</button>
+
+@if(showModal)
+{
+    <h4>Select Period</h4>
+
+    <div>
+        <label>From</label>
+        <input type="datetime-local" @bind="dateFrom"/>
+    </div>
+
+    <div>
+        <label>To</label>
+        <input type="datetime-local" @bind="dateTo"/>
+    </div>
+
+    <button @onclick="Export">Export</button>
+    <button @onclick="Cancel">Cancel</button>
+}
+
+@code{
+    bool showModal;
+    DateTime? dateFrom;
+    DateTime? dateTo;
+
+    public void OpenModal(){
+        showModal = true;
+    }
+
+    async Task Export(){
+        if (dateFrom == null || dateTo == null){
+            return;
+        }
+        var url = $"http://localhost:5246/api/export?from={dateFrom}&to={dateTo}";
+        Nav.NavigateTo(url, true);
+    }
+
+    void Cancel(){
+        showModal = false;
+    }
+}

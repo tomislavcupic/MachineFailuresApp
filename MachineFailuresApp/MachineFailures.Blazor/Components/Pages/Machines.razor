@@ -1,0 +1,37 @@
+﻿@page "/machines"
+
+@inject ApiService Api
+
+<h3>Machines</h3>
+
+<a href="/add-machine">Add machine</a>
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Category</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var machine in machines)
+        {
+            <tr>
+                <td>@machine.Name</td>
+                <td>@machine.CategoryId</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+
+    private List<Machine> machines = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        machines = await Api.GetMachines();
+    }
+
+}

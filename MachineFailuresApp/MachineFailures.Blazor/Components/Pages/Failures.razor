@@ -1,0 +1,51 @@
+@page "/failures"
+
+@inject ApiService Api
+
+<h3>Failures</h3>
+
+<a href="/add-failure">Add failure</a>
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Machine ID</th>
+            <th>Description</th>
+            <th>Start of failure</th>
+            <th>End of failure</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var failure in failures)
+        {
+            <tr>
+                <td>@failure.Name</td>
+                <td>@failure.MachineId</td>
+                <td>@failure.Description</td>
+                <td>@failure.StartOfFailure</td>
+                <td>@if (failure.EndOfFailure != null) @failure.EndOfFailure </td>
+                <td>
+                    <button @onclick="() => DeleteFailure(failure.Id)">Delete</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+
+    private List<Failure> failures = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        failures = await Api.GetFailures();
+    }
+
+    async Task DeleteFailure(int id)
+    {
+        await Api.DeleteFailure(id);
+        failures = await Api.GetFailures();
+    }
+}

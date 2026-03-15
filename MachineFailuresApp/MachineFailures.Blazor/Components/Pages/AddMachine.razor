@@ -1,0 +1,95 @@
+﻿@page "/add-machine"
+@inject ApiService Api
+@inject NavigationManager Nav
+
+<h3>Add Machine</h3>
+
+@if (categories == null)
+{
+    <p>Loading categories...</p>
+}
+else if (!categories.Any())
+{
+    <p class="text-danger">No categories available. Add categories in API first (or via Swagger POST /api/categories).</p>
+}
+
+<div>
+    <label>Machine Name</label>
+    <input placeholder="Machine name" @bind="machine.Name" />
+</div>
+<div>
+    <label>Category</label>
+    <select @bind="machine.CategoryId">
+        <option value="0">-- Select category --</option>
+        @foreach (var c in categories)
+        {
+            <option value="@c.Id">@c.Id - @c.Name</option>
+        }
+    </select>
+</div>
+
+<button type="button" @onclick="Save" disabled="@(categories == null || !categories.Any())">Save</button>
+
+@if (!string.IsNullOrEmpty(status))
+{
+    <p>@status</p>
+}
+@if (!string.IsNullOrEmpty(error))
+{
+    <p class="text-danger">@error</p>
+}
+
+@code {
+    private Machine machine = new Machine();
+    private List<Category> categories = new();
+    private string? error;
+    private string? status;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            categories = await Api.GetCategories();
+            if (!categories.Any())
+            {
+                error = "No categories available. Add categories in API first (or via Swagger POST /api/categories).";
+            }
+        }
+        catch (Exception ex)
+        {
+            error = "Unable to load categories: " + ex.Message;
+        }
+    }
+
+    async Task Save()
+    {
+        Console.WriteLine("SAVE CLICKED");
+        error = null;
+        status = "Saving...";
+
+        if (string.IsNullOrWhiteSpace(machine.Name))
+        {
+            status = null;
+            error = "Machine name is required.";
+            return;
+        }
+        if (machine.CategoryId <= 0)
+        {
+            status = null;
+            error = "Please select a valid category.";
+            return;
+        }
+
+        try
+        {
+            await Api.AddMachine(machine);
+            status = "Saved successfully! Redirecting...";
+            Nav.NavigateTo("/machines");
+        }
+        catch (Exception ex)
+        {
+            status = null;
+            error = "Could not save machine: " + ex.Message;
+        }
+    }
+}
